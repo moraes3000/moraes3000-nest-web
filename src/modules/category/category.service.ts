@@ -5,6 +5,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'src/infra/database/prisma.service';
 
 import { generateSlug, generateUniqueHash } from 'src/infra/utils/gerador-slug';
+import { async } from 'rxjs';
 
 @Injectable()
 export class CategoryService {
@@ -46,9 +47,21 @@ export class CategoryService {
   }
 
   async findById(id: string) {
-    return this.prisma.category.findUnique({
+    const category = await this.prisma.category.findUnique({
       where: { id },
+      include: {
+        Product: true,
+      },
     });
+
+    // Ordena os produtos pelo nome
+    if (category && category.Product) {
+      category.Product = category.Product.sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+    }
+
+    return category;
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
