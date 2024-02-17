@@ -15,8 +15,24 @@ model Category {
   name String
   slug String?
 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String?
+  description String?
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("categories")
+  @@map("products")
 }

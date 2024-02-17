@@ -1,6 +1,7 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+
 import { PrismaService } from 'src/infra/database/prisma.service';
 
 import { generateSlug, generateUniqueHash } from 'src/infra/utils/gerador-slug';
@@ -23,8 +24,25 @@ export class CategoryService {
     });
   }
 
-  async findAll() {
-    return this.prisma.category.findMany();
+  async findAll(page = 1, pageSize = 10) {
+    const skip = (page - 1) * pageSize;
+    const totalCount = await this.prisma.category.count(); // Obtém o número total de registros
+
+    const categories = await this.prisma.category.findMany({
+      skip,
+      take: pageSize,
+      include: {
+        Product: true,
+      },
+    });
+
+    return {
+      data: categories,
+      page,
+      pageSize,
+      totalCount,
+      totalPages: Math.ceil(totalCount / pageSize),
+    };
   }
 
   async findById(id: string) {
