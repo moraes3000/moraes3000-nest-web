@@ -22,8 +22,8 @@ export class CategoryController {
   }
 
   @Get()
-  findAll(@Query('page') page = 1, @Query('pageSize') pageSize = 5) {
-    return this.categoryService.findAll(page, pageSize);
+  findAll(@Query('page') page = 1, @Query('itemsPerPage') itemsPerPage = 10) {
+    return this.categoryService.findAll(page, itemsPerPage);
   }
 
   @Get(':id')

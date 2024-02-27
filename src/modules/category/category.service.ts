@@ -25,13 +25,25 @@ export class CategoryService {
     });
   }
 
-  async findAll(page = 1, pageSize = 10) {
-    const skip = (page - 1) * pageSize;
-    const totalCount = await this.prisma.category.count(); // Obtém o número total de registros
+  // service
+  async findAll(
+    page = 1,
+
+    itemsPerPage?: number,
+    totalPages?: number,
+  ) {
+    const skip = (page - 1) * itemsPerPage;
+    let totalCount: number;
+
+    if (totalPages) {
+      totalCount = totalPages * itemsPerPage;
+    } else {
+      totalCount = await this.prisma.category.count();
+    }
 
     const categories = await this.prisma.category.findMany({
       skip,
-      take: pageSize,
+      take: +itemsPerPage, // Converte itemsPerPage para um número usando o operador unário '+'
       include: {
         Product: true,
       },
@@ -40,9 +52,9 @@ export class CategoryService {
     return {
       data: categories,
       page,
-      pageSize,
+      // pageSize,
       totalCount,
-      totalPages: Math.ceil(totalCount / pageSize),
+      totalPages: totalPages || Math.ceil(totalCount / itemsPerPage),
     };
   }
 
