@@ -47,6 +47,9 @@ export class CategoryService {
       include: {
         Product: true,
       },
+      orderBy: {
+        name: 'desc',
+      },
     });
 
     return {
@@ -73,6 +76,18 @@ export class CategoryService {
       );
     }
 
+    return category;
+  }
+
+  async getBySlug(slug: string) {
+    const category = await this.prisma.category.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        Product: true,
+      },
+    });
     return category;
   }
 

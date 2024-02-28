@@ -26,9 +26,13 @@ export class CategoryController {
     return this.categoryService.findAll(page, itemsPerPage);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get('id/:id')
+  findOneById(@Param('id') id: string) {
     return this.categoryService.findById(id);
+  }
+  @Get(':slug')
+  findUnique(@Param('slug') slug: string) {
+    return this.categoryService.getBySlug(slug);
   }
 
   @Patch(':id')
